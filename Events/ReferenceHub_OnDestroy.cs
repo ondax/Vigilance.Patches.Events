@@ -11,13 +11,12 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                Player player = Server.PlayerList.GetPlayer(__instance);
+                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
                 if (player == null)
                     return true;
                 Environment.OnPlayerLeave(player, out bool destroy);
-                if (!destroy)
-                    return false;
-                Server.PlayerList.Remove(__instance);
+                if (!__instance.isDedicatedServer)
+                    Server.PlayerList.Remove(__instance);
                 ReferenceHub.Hubs.Remove(__instance.gameObject);
                 ReferenceHub.HubIds.Remove(__instance.queryProcessor.PlayerId);
                 if (ReferenceHub._hostHub == __instance)

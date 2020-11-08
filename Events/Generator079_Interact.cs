@@ -24,6 +24,8 @@ namespace Vigilance.Patches.Events
                             if (__instance.isTabletConnected || !__instance.isDoorOpen || __instance._localTime <= 0f || Generator079.mainGenerator.forcedOvercharge)
                                 return false;
                             Player player = Server.PlayerList.GetPlayer(person);
+                            if (player == null)
+                                return true;
                             foreach (Inventory.SyncItemInfo item in player.Hub.inventory.items)
                             {
                                 if (item.id == ItemType.WeaponManagerTablet)
@@ -43,6 +45,8 @@ namespace Vigilance.Patches.Events
                         return false;
                 }
                 Player ply = Server.PlayerList.GetPlayer(person);
+                if (ply == null)
+                    return true;
                 Environment.OnGeneratorEject(__instance, ply, true, out bool allow2);
                 if (!allow2)
                     return false;
@@ -51,7 +55,6 @@ namespace Vigilance.Patches.Events
             }
             catch (Exception e)
             {
-                Log.Add(nameof(Generator079.Interact), e);
                 return true;
             }
         }

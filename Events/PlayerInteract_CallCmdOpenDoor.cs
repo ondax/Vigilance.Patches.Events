@@ -16,7 +16,7 @@ namespace Vigilance.Patches.Events
                 if (!__instance._playerInteractRateLimit.CanExecute() || (__instance._hc.CufferId > 0 && !PlayerInteract.CanDisarmedInteract) || doorId == null || __instance._ccm.CurClass == RoleType.None || __instance._ccm.CurClass == RoleType.Spectator || !doorId.TryGetComponent(out Door component) || ((component.Buttons.Count == 0) ? (!__instance.ChckDis(doorId.transform.position)) : component.Buttons.All((Door.DoorButton item) => !__instance.ChckDis(item.button.transform.position))))
                     return false;
                 __instance.OnInteract();
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return true;
                 Environment.OnDoorInteract(true, component, player, out bool allow);
@@ -63,9 +63,8 @@ namespace Vigilance.Patches.Events
                         __instance.RpcDenied(doorId);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    Log.Add(nameof(PlayerInteract.CallCmdOpenDoor), e);
                     __instance.RpcDenied(doorId);
                 }
                 return false;

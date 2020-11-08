@@ -26,9 +26,8 @@ namespace Vigilance.Patches.Events
                 __instance.Networkspeed = v2;
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Log.Add(nameof(AnimationController.CallCmdSyncData), e);
                 return true;
             }
         }

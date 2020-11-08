@@ -59,13 +59,15 @@ namespace Vigilance.Patches.Events
                 bool flag4 = !noTeamDamage && info.IsPlayer && referenceHub != info.RHub && referenceHub.characterClassManager.Fraction == info.RHub.characterClassManager.Fraction;
                 if (flag4)
                     info.Amount *= PlayerStats.FriendlyFireFactor;
-                Player player = new Player(referenceHub);
+                Player player = Server.PlayerList.GetPlayer(referenceHub);
                 Player player2 = null;
                 GameObject playerObject = info.GetPlayerObject();
                 if (playerObject != null)
                     player2 = Server.PlayerList.GetPlayer(playerObject);
                 else if (ReferenceHub.GetHub(__instance.gameObject).nicknameSync != null)
-                    player2 = Server.PlayerList.GetPlayer(__instance.gameObject);
+                    player2 = Server.PlayerList.GetPlayer(__instance.ccm._hub);
+                if (player == null || player2 == null)
+                    return true;
                 Environment.OnHurt(player, player2, info, true, out info, out bool allow);
                 if (!allow)
                     return false;
@@ -104,7 +106,7 @@ namespace Vigilance.Patches.Events
                     }
                     playerStats.lastHitInfo = info;
                 }
-                PlayableScpsController component = go.GetComponent<PlayableScpsController>();
+                PlayableScpsController component = referenceHub.scpsController;
                 IDamagable damagable;
                 if (component != null && (damagable = (component.CurrentScp as IDamagable)) != null)
                     damagable.OnDamage(info);
@@ -163,7 +165,7 @@ namespace Vigilance.Patches.Events
                         if (characterClassManager.CurClass == RoleType.Scientist)
                         {
                             Item itemByID = inventory.GetItemByID(inventory.curItem);
-                            if (itemByID != null && itemByID.itemCategory == ItemCategory.Keycard && __instance.GetComponent<CharacterClassManager>().CurClass == RoleType.ClassD)
+                            if (itemByID != null && itemByID.itemCategory == ItemCategory.Keycard && __instance.ccm.CurClass == RoleType.ClassD)
                             {
                                 __instance.TargetAchieve(__instance.connectionToClient, "betrayal");
                             }
@@ -171,9 +173,9 @@ namespace Vigilance.Patches.Events
                         if (Time.realtimeSinceStartup - __instance._killStreakTime > 30f || __instance._killStreak == 0)
                         {
                             __instance._killStreak = 0;
-                            __instance._killStreakTime = UnityEngine.Time.realtimeSinceStartup;
+                            __instance._killStreakTime = Time.realtimeSinceStartup;
                         }
-                        if (__instance.GetComponent<WeaponManager>().GetShootPermission(characterClassManager, true))
+                        if (__instance.ccm._hub.weaponManager.GetShootPermission(characterClassManager, true))
                             __instance._killStreak++;
                         if (__instance._killStreak > 5)
                             __instance.TargetAchieve(__instance.connectionToClient, "pewpew");
@@ -305,7 +307,7 @@ namespace Vigilance.Patches.Events
                     }
                     else if (info.GetDamageType() == DamageTypes.Pocket)
                     {
-                        PlayerMovementSync component2 = __instance.ccm.GetComponent<PlayerMovementSync>();
+                        PlayerMovementSync component2 = __instance.ccm._hub.playerMovementSync;
                         if (component2.RealModelPosition.y > -1900f)
                         {
                             component2.OverridePosition(Vector3.down * 1998.5f, 0f, true);
