@@ -11,12 +11,14 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                if (__instance == null || __instance.characterClassManager == null || __instance.characterClassManager.gameObject == null || __instance.characterClassManager.IsHost)
+                    return true;
+                Player player = Server.PlayerList.GetPlayer(__instance.characterClassManager.gameObject);
                 if (player == null)
                     return true;
+                ServerConsole.AddLog($"[NETWORKING] \"{player.Nick}\" disconnected from \"{player.IpAddress}\" ({player.UserId})", ConsoleColor.White);
                 Environment.OnPlayerLeave(player, out bool destroy);
-                if (!__instance.isDedicatedServer)
-                    Server.PlayerList.Remove(__instance);
+                Server.PlayerList.Remove(__instance);
                 ReferenceHub.Hubs.Remove(__instance.gameObject);
                 ReferenceHub.HubIds.Remove(__instance.queryProcessor.PlayerId);
                 if (ReferenceHub._hostHub == __instance)

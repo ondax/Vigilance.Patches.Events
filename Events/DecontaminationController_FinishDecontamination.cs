@@ -26,7 +26,10 @@ namespace Vigilance.Patches.Events
                     }
 
                     foreach (DecontaminationEvacuationDoor decontaminationEvacuationDoor in DecontaminationEvacuationDoor.Instances)
-                            decontaminationEvacuationDoor?.Close();
+                    {
+                        if (decontaminationEvacuationDoor != null && decontaminationEvacuationDoor.transform != null)
+                            decontaminationEvacuationDoor.Close();
+                    }
 
                     if (DecontaminationController.AutoDeconBroadcastEnabled && !__instance._decontaminationBegun)
                         Map.Broadcast(DecontaminationController.DeconBroadcastDeconMessage, (int)DecontaminationController.DeconBroadcastDeconMessageTime);

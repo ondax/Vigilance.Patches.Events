@@ -60,7 +60,6 @@ namespace Vigilance.Patches.Events
                             classid.ToString(),
                             "."
                         }), ServerLogs.ServerLogType.GameEvent, false);
-                        Log.Add(nameof(RespawnManager.Spawn), $"Respawned {referenceHub.nicknameSync.MyNick} as {classid.AsString()}", LogType.Debug);
                     }
                     catch (Exception ex)
                     {
@@ -86,7 +85,6 @@ namespace Vigilance.Patches.Events
                         __instance.NextKnownTeam.ToString(),
                         "!"
                     }), ServerLogs.ServerLogType.GameEvent, false);
-                    Log.Add(nameof(RespawnManager.Spawn), $"Succesfully respawned {list2.Count} players as {__instance.NextKnownTeam}", LogType.Debug);
                     RespawnTickets.Singleton.GrantTickets(__instance.NextKnownTeam, -list2.Count * spawnableTeam.TicketRespawnCost, false);
                     UnitNamingRule unitNamingRule;
                     if (UnitNamingRules.TryGetNamingRule(__instance.NextKnownTeam, out unitNamingRule))
