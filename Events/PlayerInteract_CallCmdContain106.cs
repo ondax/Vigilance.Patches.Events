@@ -15,7 +15,7 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (!Map.LureSubjectContainer.allowContain || (__instance._ccm.CurRole.team == Team.SCP && __instance._ccm.CurClass != RoleType.Scp106) || !__instance.ChckDis(Map.FemurBreaker.transform.position) || OneOhSixContainer.used || __instance._ccm.CurRole.team == Team.RIP)
                     return false;
-                Player i = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player i = Server.PlayerList.GetPlayer(__instance._ccm._hub);
                 if (i == null)
                     return true;
                 foreach (Player player in Server.PlayerList.Players.Values)

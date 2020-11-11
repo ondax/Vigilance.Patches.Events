@@ -85,7 +85,7 @@ namespace Vigilance.Patches.Events
                         }
 
                         Vector3 pos = __instance.tpPositions[UnityEngine.Random.Range(0, __instance.tpPositions.Count)];
-                        pos.y += 1.5f;
+                        pos.y += 2f;
                         Environment.OnPocketEscape(player, pos, true, out Vector3 newPos, out bool allow);
                         player.DisableEffect<Corroding>();
                         player.Hub.playerMovementSync.AddSafeTime(5f);

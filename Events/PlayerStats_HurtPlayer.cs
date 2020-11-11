@@ -26,6 +26,8 @@ namespace Vigilance.Patches.Events
                 bool flag2 = false;
                 bool flag3 = go == null;
                 ReferenceHub referenceHub = flag3 ? null : ReferenceHub.GetHub(go);
+                if (referenceHub == null)
+                    return false;
                 if (info.Amount < 0f)
                 {
                     if (flag3)
@@ -43,7 +45,7 @@ namespace Vigilance.Patches.Events
                 if (info.Amount > 2.1474836E+09f)
                     info.Amount = 2.1474836E+09f;
                 if (info.GetDamageType().isWeapon && referenceHub.characterClassManager.IsAnyScp() && info.GetDamageType() != DamageTypes.MicroHid)
-                    info.Amount *= __instance.weaponManager.weapons[(int)__instance.weaponManager.curWeapon].scpDamageMultiplier;
+                    info.Amount *= __instance.weaponManager.weapons[__instance.weaponManager.curWeapon].scpDamageMultiplier;
                 if (flag3)
                     return false;
                 PlayerStats playerStats = referenceHub.playerStats;
@@ -59,16 +61,11 @@ namespace Vigilance.Patches.Events
                 bool flag4 = !noTeamDamage && info.IsPlayer && referenceHub != info.RHub && referenceHub.characterClassManager.Fraction == info.RHub.characterClassManager.Fraction;
                 if (flag4)
                     info.Amount *= PlayerStats.FriendlyFireFactor;
-                Player player = Server.PlayerList.GetPlayer(referenceHub);
-                Player player2 = null;
-                GameObject playerObject = info.GetPlayerObject();
-                if (playerObject != null)
-                    player2 = Server.PlayerList.GetPlayer(playerObject);
-                else if (ReferenceHub.GetHub(__instance.gameObject).nicknameSync != null)
-                    player2 = Server.PlayerList.GetPlayer(__instance.ccm._hub);
-                if (player == null || player2 == null)
+                Player myTarget = Server.PlayerList.GetPlayer(referenceHub);
+                Player myPlayer = Server.PlayerList.GetPlayer(__instance.ccm._hub);
+                if (myTarget == null || myPlayer == null)
                     return true;
-                Environment.OnHurt(player, player2, info, true, out info, out bool allow);
+                Environment.OnHurt(myPlayer, myTarget, info, true, out info, out bool allow);
                 if (!allow)
                     return false;
                 float health = playerStats.Health;
@@ -186,7 +183,7 @@ namespace Vigilance.Patches.Events
                         __instance.TargetAchieve(__instance.connectionToClient, "illpassthanks");
                     if (__instance.ccm.CurRole.team == Team.RSC && __instance.ccm.Classes.SafeGet(characterClassManager.CurClass).team == Team.SCP)
                         __instance.TargetAchieve(__instance.connectionToClient, "timetodoitmyself");
-                    Environment.OnPlayerDie(player2, player, info, true, out info, out bool allow2, out bool spawnRagdoll);
+                    Environment.OnPlayerDie(myPlayer, myTarget, info, true, out info, out bool allow2, out bool spawnRagdoll);
                     if (!allow2)
                         return false;
                     bool flag6 = info.IsPlayer && referenceHub == info.RHub;

@@ -1,4 +1,5 @@
 ﻿using System;
+using GameCore;
 using Harmony;
 using Vigilance.API;
 
@@ -12,9 +13,14 @@ namespace Vigilance.Patches.Events
             try
             {
                 Environment.OnRoundRestart();
-                Server.PlayerList.Reset();
                 RagdollManager_SpawnRagdoll.Owners.Clear();
                 RagdollManager_SpawnRagdoll.Ragdolls.Clear();
+                if (ConfigManager.DisableLocksOnRestart)
+                {
+                    RoundSummary.RoundLock = false;
+                    RoundStart.LobbyLock = false;
+                } 
+                Server.PlayerList.Reset();
             }
             catch (Exception e)
             {
