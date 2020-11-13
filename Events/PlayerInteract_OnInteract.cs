@@ -11,7 +11,7 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return true;
                 Environment.OnInteract(player, true, out bool allow);

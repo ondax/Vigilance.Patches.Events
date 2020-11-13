@@ -13,7 +13,7 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return;
                 Environment.OnSpawn(player, player.Position, __instance.CurClass, true, out Vector3 pos, out RoleType role, out bool allow);

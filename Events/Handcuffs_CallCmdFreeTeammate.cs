@@ -1,33 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GameCore;
 using Harmony;
-using LightContainmentZoneDecontamination;
-using Respawning.NamingRules;
 using Vigilance.API;
-using Vigilance.Extensions;
-using Grenades;
 using UnityEngine;
-using CustomPlayerEffects;
-using NorthwoodLib.Pools;
-using Mirror;
-using System.Text;
-using RemoteAdmin;
-using PlayableScps;
-using PlayableScps.Interfaces;
-using Respawning;
-using MEC;
-using Console = GameCore.Console;
-using Scp914;
-using Cryptography;
-using System.Threading;
-using System.Reflection;
-using System.Reflection.Emit;
-using Vigilance.Events;
-using Searching;
-using Vigilance.Enums;
-using PlayableScps.Messages;
 
 namespace Vigilance.Patches.Events
 {
@@ -44,7 +18,7 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (__instance.MyReferenceHub.characterClassManager.CurRole.team == Team.SCP)
                     return false;
-                Player myPlayer = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player myPlayer = Server.PlayerList.GetPlayer(__instance.MyReferenceHub);
                 Player myTarget = Server.PlayerList.GetPlayer(target);
                 if (myPlayer == null || myTarget == null)
                     return true;

@@ -19,7 +19,7 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (__instance.curWeapon < 0 || ((__instance._reloadCooldown > 0f || __instance._fireCooldown > 0f) && !__instance.isLocalPlayer))
                     return false;
-                if (__instance._hub.inventory.curItem != __instance.weapons[(int)__instance.curWeapon].inventoryID)
+                if (__instance._hub.inventory.curItem != __instance.weapons[__instance.curWeapon].inventoryID)
                     return false;
                 if (__instance._hub.inventory.items[itemIndex].durability <= 0f)
                     return false;

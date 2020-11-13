@@ -22,6 +22,8 @@ namespace Vigilance.Patches.Events
                 foreach (Player ply in Server.PlayerList.Players.Values)
                     if (ply.Nick == hit.Attacker)
                         attacker = ply;
+                if (attacker == null)
+                    return true;
                 Environment.OnAnnounceSCPTermination(attacker, scp, hit, string.IsNullOrEmpty(hit.Attacker) ? "NONE" : hit.Attacker, true, out bool allow);
                 if (!allow)
                     return false;

@@ -18,8 +18,10 @@ namespace Vigilance.Patches.Events
                 if (target == null || Vector3.Distance(target.transform.position, __instance.transform.position) > __instance.raycastDistance * 1.1f)
                     return false;
                 Player targetPlayer = Server.PlayerList.GetPlayer(target);
-                Player owner = Server.PlayerList.GetPlayer(__instance.gameObject);
-                if (target == null || owner == null || __instance.MyReferenceHub.inventory.curItem != ItemType.Disarmer || __instance.MyReferenceHub.characterClassManager.CurClass < RoleType.Scp173)
+                Player owner = Server.PlayerList.GetPlayer(__instance.MyReferenceHub);
+                if (targetPlayer == null || owner == null)
+                    return true;
+                if (__instance.MyReferenceHub.inventory.curItem != ItemType.Disarmer || __instance.MyReferenceHub.characterClassManager.CurClass < RoleType.Scp173)
                     return false;
                 if (targetPlayer.Hub.handcuffs.CufferId < 0)
                 {

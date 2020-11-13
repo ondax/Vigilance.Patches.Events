@@ -1,7 +1,6 @@
 ﻿using System;
 using Harmony;
 using Vigilance.API;
-using UnityEngine;
 
 namespace Vigilance.Patches.Events
 {
@@ -13,22 +12,19 @@ namespace Vigilance.Patches.Events
             try
             {
                 if (!__instance._playerInteractRateLimit.CanExecute(true) || (__instance._hc.CufferId > 0 && !PlayerInteract.CanDisarmedInteract))
-                {
                     return false;
-                }
-                GameObject gameObject = GameObject.Find("OutsitePanelScript");
-                if (!__instance.ChckDis(gameObject.transform.position))
-                {
+                if (Map.OutsitePanelScript == null || Map.OutsitePanelScript.transform == null || Map.OutsitePanel == null)
+                    return true;
+                if (!__instance.ChckDis(Map.OutsitePanelScript.transform.position))
                     return false;
-                }
                 Item itemByID = __instance._inv.GetItemByID(__instance._inv.curItem);
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return false;
                 Environment.OnWarheadKeycardAccess(player, __instance._sr.BypassMode || (itemByID != null && itemByID.permissions.Contains("CONT_LVL_3")), out bool allow);
                 if (allow)
                 {
-                    gameObject.GetComponentInParent<AlphaWarheadOutsitePanel>().NetworkkeycardEntered = true;
+                    Map.OutsitePanel.NetworkkeycardEntered = !Map.OutsitePanel.NetworkkeycardEntered;
                     __instance.OnInteract();
                 }
                 return false;

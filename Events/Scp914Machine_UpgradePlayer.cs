@@ -13,7 +13,7 @@ namespace Vigilance.Patches.Events
 		{
 			try
 			{
-				Player ply = Server.PlayerList.GetPlayer(player.gameObject);
+				Player ply = Server.PlayerList.GetPlayer(player._hub);
 				if (ply == null)
 					return true;
 				Environment.OnScp914UpgradePlayer(ply, out bool allow);

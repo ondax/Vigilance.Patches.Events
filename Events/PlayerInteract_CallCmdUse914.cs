@@ -17,7 +17,7 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (Scp914Machine.singleton.working || !__instance.ChckDis(Scp914Machine.singleton.button.position))
                     return false;
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return true;
                 Environment.OnSCP914Activate(player, (float)NetworkTime.time, true, out float time, out bool allow);

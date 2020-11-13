@@ -16,11 +16,9 @@ namespace Vigilance.Patches.Events
                 if (!__instance.inProgress || !(__instance.timeToDetonation > 10f) || __instance._isLocked)
                     return false;
                 Player player = Server.PlayerList.GetPlayer(disabler);
-                if (player == null)
-                    player = new Player(ReferenceHub.HostHub);
+                if (disabler == null || player == null)
+                    player = Server.PlayerList.Local;
                 Environment.OnWarheadCancel(player, __instance.timeToDetonation, true, out __instance.timeToDetonation, out bool allow);
-                if (!allow)
-                    return false;
                 if (__instance.timeToDetonation <= 15f && disabler != null)
                     player.Achieve(Enums.Achievement.ThatWasClose);
                 for (sbyte b = 0; b < __instance.scenarios_resume.Length; b = (sbyte)(b + 1))
@@ -28,8 +26,7 @@ namespace Vigilance.Patches.Events
                         __instance.NetworksyncResumeScenario = b;
                 __instance.NetworktimeToDetonation = ((AlphaWarheadController._resumeScenario < 0) ? __instance.scenarios_start[AlphaWarheadController._startScenario].SumTime() : __instance.scenarios_resume[AlphaWarheadController._resumeScenario].SumTime()) + __instance.cooldown;
                 __instance.NetworkinProgress = false;
-                Door[] array = UnityEngine.Object.FindObjectsOfType<Door>();
-                foreach (Door obj in array)
+                foreach (Door obj in Map.Doors)
                 {
                     obj.warheadlock = false;
                     obj.CheckpointLockOpenWarhead = false;

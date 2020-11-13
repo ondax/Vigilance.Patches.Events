@@ -53,7 +53,7 @@ namespace Vigilance.Patches.Events
                 __instance.EjectTablet();
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return true;
             }

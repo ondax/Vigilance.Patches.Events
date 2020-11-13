@@ -23,7 +23,7 @@ namespace Vigilance.Patches.Events
                 Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
                 if (player == null)
                     return true;
-                GameConsoleTransmission gct = player.GetComponent<GameConsoleTransmission>();
+                GameConsoleTransmission gct = player.GetComponent<GameConsoleTransmission>();              
                 if (num < 2f)
                 {
                     gct.SendToClient(__instance.connectionToClient, "[REPORTING] Reporting rate limit exceeded (1).", "red");
@@ -38,7 +38,7 @@ namespace Vigilance.Patches.Events
                 }
                 if (notifyGm && (!ServerStatic.GetPermissionsHandler().IsVerified || string.IsNullOrEmpty(ServerConsole.Password)))
                 {
-                    gct.SendToClient(__instance.connectionToClient, "[REPORTING] Server is not verified - you can't use report feature on this server.", "red");
+                    gct.SendToClient(__instance.connectionToClient, "[REPORTING] Server is not verified - you can't use report feature on __instance server.", "red");
                     return false;
                 }
                 if (player.PlayerId == playerId)

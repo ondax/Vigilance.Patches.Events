@@ -16,7 +16,7 @@ namespace Vigilance.Patches.Events
                 Player player = Server.PlayerList.GetPlayer(__instance.characterClassManager.gameObject);
                 if (player == null)
                     return true;
-                ServerConsole.AddLog($"[NETWORKING] \"{player.Nick}\" disconnected from \"{player.IpAddress}\" ({player.UserId})", ConsoleColor.White);
+                ServerConsole.AddLog($"\"{player.Nick}\" disconnected from {player.IpAddress} ({player.UserId})", ConsoleColor.White);
                 Environment.OnPlayerLeave(player, out bool destroy);
                 Server.PlayerList.Remove(__instance);
                 ReferenceHub.Hubs.Remove(__instance.gameObject);

@@ -15,7 +15,7 @@ namespace Vigilance.Patches.Events
             {
                 if (!__instance._interactRateLimit.CanExecute(true))
                     return false;
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return true;
                 __instance._cancel = false;

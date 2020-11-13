@@ -12,7 +12,7 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                Player player = Server.PlayerList.GetPlayer(__instance.Hub.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance.Hub);
                 if (player == null)
                     return true;
                 Environment.OnPickupItem(__instance.TargetPickup, player, true, out bool allow);

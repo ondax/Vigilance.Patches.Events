@@ -20,6 +20,9 @@ namespace Vigilance.Patches.Events
                     return true;
                 if (!__instance.CanReceiveTargets || __instance._targets.Contains(player.Hub))
                     return false;
+                Environment.OnScp096AddTarget(player, true, out bool allow);
+                if (!allow)
+                    return false;
                 if (!__instance._targets.IsEmpty())
                     __instance.AddReset();
                 __instance._targets.Add(player.Hub);

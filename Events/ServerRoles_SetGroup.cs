@@ -37,7 +37,7 @@ namespace Vigilance.Patches.Events
                 }
                 else
                 {
-                    Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                    Player player = Server.PlayerList.GetPlayer(__instance._hub);
                     if (player == null)
                         return false;
                     Environment.OnSetGroup(player, group, true, out group, out bool allow);

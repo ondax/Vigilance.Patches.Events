@@ -17,7 +17,7 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (!__instance._hub.playerMovementSync.Grounded)
                     return false;
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return true;
                 if (__instance.iAm106 && __instance.portalPosition != Vector3.zero && !__instance.goingViaThePortal)

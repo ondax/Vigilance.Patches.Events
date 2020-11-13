@@ -14,7 +14,7 @@ namespace Vigilance.Patches.Events
                 if (!__instance._iawRateLimit.CanExecute(true) || itemInventoryIndex < 0 ||
                     itemInventoryIndex >= __instance.items.Count)
                     return false;
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return true;
                 Inventory.SyncItemInfo syncItemInfo = __instance.items[itemInventoryIndex];

@@ -20,6 +20,8 @@ namespace Vigilance.Patches.Events
                 string address = user.GetComponent<NetworkIdentity>().connectionToClient.address;
                 Player targetPlayer = Server.PlayerList.GetPlayer(user);
                 Player issuerPlayer = Server.PlayerList.GetPlayer(issuer);
+                if (targetPlayer == null || issuerPlayer == null)
+                    return true;
                 reason = string.IsNullOrEmpty(reason) ? "No reason provided." : reason;
                 try
                 {

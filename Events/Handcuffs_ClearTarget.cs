@@ -15,7 +15,7 @@ namespace Vigilance.Patches.Events
                 foreach (GameObject player in PlayerManager.players)
                 {
                     Player ply = Server.PlayerList.GetPlayer(player);
-                    Player myPlayer = Server.PlayerList.GetPlayer(__instance.gameObject);
+                    Player myPlayer = Server.PlayerList.GetPlayer(__instance.MyReferenceHub);
                     if (ply == null || myPlayer == null)
                         return true;
                     if (ply.CufferId == myPlayer.PlayerId)

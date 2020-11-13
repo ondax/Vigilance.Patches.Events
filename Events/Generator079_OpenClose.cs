@@ -11,7 +11,9 @@ namespace Vigilance.Patches.Events
         public static bool Prefix(Generator079 __instance, GameObject person)
         {
             Player player = Server.PlayerList.GetPlayer(person);
-            if (player == null || __instance._doorAnimationCooldown > 0f || __instance._deniedCooldown > 0f)
+            if (player == null)
+                return true;
+            if (__instance._doorAnimationCooldown > 0f || __instance._deniedCooldown > 0f)
                 return false;
             try
             {

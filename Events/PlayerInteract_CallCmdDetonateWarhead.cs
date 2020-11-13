@@ -11,8 +11,12 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
+                    return true;
+                if (Map.OutsitePanelScript == null || Map.OutsitePanelScript.transform == null)
+                    return true;
+                if (Map.OutsitePanel == null)
                     return true;
                 if (__instance._playerInteractRateLimit.CanExecute() && (__instance._hc.CufferId <= 0 || PlayerInteract.CanDisarmedInteract) && __instance._playerInteractRateLimit.CanExecute())
                 {

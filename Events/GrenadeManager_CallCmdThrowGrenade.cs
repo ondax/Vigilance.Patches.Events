@@ -20,7 +20,7 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (id < 0 || __instance.availableGrenades.Length <= id)
                     return false;
-                Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance.hub);
                 if (player == null)
                     return true;
                 GrenadeSettings grenadeSettings = __instance.availableGrenades[id];
