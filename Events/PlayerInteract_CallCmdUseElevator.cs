@@ -27,8 +27,6 @@ namespace Vigilance.Patches.Events
                     if (__instance.ChckDis(elevator2.door.transform.position))
                     {
                         Environment.OnElevatorInteract(component, player, true, out bool allow);
-                        if (!allow)
-                            return false;
                         component.UseLift();
                         __instance.OnInteract();
                     }
