@@ -26,7 +26,7 @@ namespace Vigilance.Patches.Events
                 __instance.SetMovementSpeed(12f);
                 __instance.SetJumpHeight(10f);
                 __instance.PlayerState = Scp096PlayerState.Enraged;
-                __instance.EnrageTimeLeft = __instance.EnrageTime;
+                __instance.EnrageTimeLeft += __instance.EnrageTime;
                 return false;
             }
             catch (Exception e)

@@ -23,7 +23,7 @@ namespace Vigilance.Patches.Events
                 Environment.OnScp096AddTarget(player, true, out bool allow);
                 if (!allow)
                     return false;
-                if (!__instance._targets.IsEmpty())
+                if (!__instance._targets.IsEmpty() || __instance.Enraged)
                     __instance.AddReset();
                 __instance._targets.Add(player.Hub);
                 NetworkServer.SendToClientOfPlayer(player.Hub.characterClassManager.netIdentity, new Scp096ToTargetMessage(player.Hub));
