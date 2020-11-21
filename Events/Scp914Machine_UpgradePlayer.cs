@@ -22,7 +22,7 @@ namespace Vigilance.Patches.Events
 				for (int i = inventory.items.Count - 1; i > -1; i--)
 				{
 					Inventory.SyncItemInfo syncItemInfo = inventory.items[i];
-					ItemType itemType = __instance.UpgradeItemID(syncItemInfo.id);
+					Environment.OnScp914UpgradeHeldItem(ply, syncItemInfo, out ItemType itemType);
 					if (itemType < ItemType.KeycardJanitor)
 					{
 						inventory.items.RemoveAt(i);

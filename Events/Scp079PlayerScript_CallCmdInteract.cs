@@ -20,7 +20,6 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (!__instance.iAm079)
                     return false;
-                Console.AddDebugLog("SCP079", "Command received from a client: " + command, MessageImportance.LessImportant);
                 if (!command.Contains(":"))
                     return false;
                 Player myPlayer = Server.PlayerList.GetPlayer(__instance.gameObject);
@@ -30,9 +29,6 @@ namespace Vigilance.Patches.Events
                 __instance.RefreshCurrentRoom();
                 if (!__instance.CheckInteractableLegitness(__instance.currentRoom, __instance.currentZone, target, true))
                     return false;
-                Environment.OnSCP079Interact(myPlayer, true, out bool allow);
-                if (!allow)
-                    return false;
                 List<string> list = ListPool<string>.Shared.Rent();
                 ConfigFile.ServerConfig.GetStringCollection("scp079_door_blacklist", list);
                 bool result = true;
@@ -41,6 +37,9 @@ namespace Vigilance.Patches.Events
                     case "TESLA":
                         {
                             float manaFromLabel = __instance.GetManaFromLabel("Tesla Gate Burst", __instance.abilities);
+                            Environment.OnSCP079Interact(myPlayer, Scp079Interactable.InteractableType.Tesla, target, manaFromLabel, true, out manaFromLabel, out bool allow);
+                            if (!allow)
+                                return false;
                             if (manaFromLabel > __instance.curMana)
                             {
                                 __instance.RpcNotEnoughMana(manaFromLabel, __instance.curMana);
@@ -89,6 +88,9 @@ namespace Vigilance.Patches.Events
                             }
 
                             float manaFromLabel = __instance.GetManaFromLabel("Door Interaction " + (string.IsNullOrEmpty(component.permissionLevel) ? "DEFAULT" : component.permissionLevel), __instance.abilities);
+                            Environment.OnSCP079Interact(myPlayer, Scp079Interactable.InteractableType.Door, target, manaFromLabel, true, out manaFromLabel, out bool allow);
+                            if (!allow)
+                                return false;
                             if (manaFromLabel > __instance.curMana)
                             {
                                 Console.AddDebugLog("SCP079", "Not enough mana.", MessageImportance.LeastImportant);

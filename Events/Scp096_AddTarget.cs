@@ -16,11 +16,12 @@ namespace Vigilance.Patches.Events
             try
             {
                 Player player = Server.PlayerList.GetPlayer(target);
-                if (player == null)
+                Player myPlayer = Server.PlayerList.GetPlayer(__instance.Hub);
+                if (player == null || myPlayer == null)
                     return true;
                 if (!__instance.CanReceiveTargets || __instance._targets.Contains(player.Hub))
                     return false;
-                Environment.OnScp096AddTarget(player, true, out bool allow);
+                Environment.OnScp096AddTarget(myPlayer, player, true, out bool allow);
                 if (!allow)
                     return false;
                 if (!__instance._targets.IsEmpty() || __instance.Enraged)

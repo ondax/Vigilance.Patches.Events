@@ -15,11 +15,10 @@ namespace Vigilance.Patches.Events
 			{
 				if (inventory.curItem == ItemType.None)
 					return false;
-				Player ply = Server.PlayerList.GetPlayer(player.gameObject);
+				Player ply = Server.PlayerList.GetPlayer(player._hub);
 				if (ply == null)
 					return true;
-				Environment.OnScp914UpgradeHeldItem(ply, inventory.GetItemInHand(), out Inventory.SyncItemInfo output);
-				ItemType itemType = output.id;
+				Environment.OnScp914UpgradeHeldItem(ply, inventory.GetItemInHand(), out ItemType itemType);
 				int itemIndex = inventory.GetItemIndex();
 				if (itemIndex < 0 || itemIndex >= inventory.items.Count)
 					return false;
@@ -41,10 +40,7 @@ namespace Vigilance.Patches.Events
 					syncItemInfo.modSight = 0;
 				}
 				syncItemInfo.id = itemType;
-				output.modBarrel = syncItemInfo.modBarrel;
-				output.modOther = syncItemInfo.modOther;
-				output.modSight = syncItemInfo.modSight;
-				inventory.items[itemIndex] = output;
+				inventory.items[itemIndex] = syncItemInfo;
 				Scp914Machine.TryFriendshipAchievement(itemType, player, players);
 				return false;
 			}
