@@ -11,9 +11,10 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                Environment.OnScp914UpgradeItem(itemID, out ItemType output, out bool allow);
+                Environment.OnScp914UpgradeItem(itemID, true, out ItemType output, out bool allow);
                 if (!allow)
                 {
+                    Log.Add("Scp914", $"Upgrade has been disallowed, returning: {itemID}", ConsoleColor.Magenta);
                     __result = itemID;
                     return false;
                 }

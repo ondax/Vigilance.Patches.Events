@@ -3,6 +3,7 @@ using Harmony;
 using UnityEngine;
 using Mirror;
 using Scp914;
+using Vigilance.API;
 
 namespace Vigilance.Patches.Events
 {
@@ -35,6 +36,16 @@ namespace Vigilance.Patches.Events
                 Environment.OnSCP914Ugrade(__instance.players, __instance.items, __instance.knobState, true, out __instance.knobState, out bool allow);
                 if (!allow)
                     return false;
+                foreach (CharacterClassManager ccm in __instance.players)
+                {
+                    Player player = Server.PlayerList.GetPlayer(ccm._hub);
+                    if (player != null)
+                    {
+                        Environment.OnScp914UpgradePlayer(player, out bool allow2);
+                        if (!allow2)
+                            return false;
+                    }
+                }
                 __instance.MoveObjects(__instance.items, __instance.players);
                 __instance.UpgradeObjects(__instance.items, __instance.players);
                 return false;

@@ -24,7 +24,7 @@ namespace Vigilance.Patches.Events
 				for (int i = inventory.items.Count - 1; i > -1; i--)
 				{
 					Inventory.SyncItemInfo syncItemInfo = inventory.items[i];
-					Environment.OnScp914UpgradeItem(syncItemInfo.id, out ItemType itemType, out bool allow2);
+					Environment.OnScp914UpgradeItem(syncItemInfo.id, true, out ItemType itemType, out bool allow2);
 					if (!allow2)
 						return false;
 					if (itemType < ItemType.KeycardJanitor)
