@@ -11,9 +11,7 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                if (__instance == null || __instance.characterClassManager == null || __instance.characterClassManager.gameObject == null || __instance.characterClassManager.IsHost)
-                    return true;
-                Player player = Server.PlayerList.GetPlayer(__instance.characterClassManager.gameObject);
+                Player player = Server.PlayerList.GetPlayer(__instance);
                 if (player == null)
                     return true;
                 ServerConsole.AddLog($"\"{player.Nick}\" disconnected from {player.IpAddress} ({player.UserId})", ConsoleColor.White);

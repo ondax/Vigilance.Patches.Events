@@ -15,7 +15,7 @@ namespace Vigilance.Patches.Events
                 Player ply = Server.PlayerList.GetPlayer(player);
                 if (ply == null)
                     return true;
-                if (Vector3.Distance(__instance.transform.position, ply.Position) < __instance.sizeOfTrigger)
+                if (Vector3.Distance(__instance.transform.position, ply.Position) <= __instance.sizeOfTrigger)
                 {
                     if (ConfigManager.TeslaTriggerableRoles.Contains(ply.Role) && !Map.TeslaGatesDisabled && !ply.GodMode)
                     {

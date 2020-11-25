@@ -16,6 +16,9 @@ namespace Vigilance.Patches.Events
             {
                 if (NetworkServer.active)
                 {
+                    Environment.OnDecontamination(true, out bool allow);
+                    if (!allow)
+                        return false;
                     foreach (Lift lift in Lift.Instances) 
                         lift?.Lock();
 

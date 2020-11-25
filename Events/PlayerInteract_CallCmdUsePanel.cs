@@ -33,8 +33,16 @@ namespace Vigilance.Patches.Events
 				{
 					if (!Map.NukesitePanel.AllowChangeLevelState())
 						return false;
+					bool state;
+					if (Map.NukesitePanel.Networkenabled)
+						state = false;
+					else
+						state = true;
+					Environment.OnSwitchLever(player, Map.NukesitePanel.enabled, state, true, out state, out bool allow);
+					if (!allow)
+						return false;
 					__instance.OnInteract();
-					Map.NukesitePanel.Networkenabled = !Map.NukesitePanel.enabled;
+					Map.NukesitePanel.Networkenabled = state;
 					__instance.RpcLeverSound();
 					ServerLogs.AddLog(ServerLogs.Modules.Warhead, player.Hub.LoggedNameFromRefHub() + " set the Alpha Warhead status to " + Map.NukesitePanel.enabled.ToString() + ".", ServerLogs.ServerLogType.GameEvent, false);
 				}

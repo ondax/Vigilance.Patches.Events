@@ -16,6 +16,10 @@ namespace Vigilance.Patches.Events
                 if (ply == null)
                     return;
                 Environment.OnSetClass(player, classid, true, out RoleType roleType, out bool allow);
+                if (roleType != player.Role)
+                    player.SetRole(roleType, true, false);
+                if (!allow)
+                    player.Kill();
             }
             catch (Exception e)
             {

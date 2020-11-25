@@ -13,7 +13,9 @@ namespace Vigilance.Patches.Events
 		{
 			try
 			{
-				Player ply = Server.PlayerList.GetPlayer(player._hub);
+				Player ply = Server.PlayerList.GetPlayer(inventory._hub);
+				if (ply == null)
+					ply = Server.PlayerList.GetPlayer(player.gameObject);
 				if (ply == null)
 					return true;
 				Environment.OnScp914UpgradePlayer(ply, out bool allow);
@@ -22,7 +24,9 @@ namespace Vigilance.Patches.Events
 				for (int i = inventory.items.Count - 1; i > -1; i--)
 				{
 					Inventory.SyncItemInfo syncItemInfo = inventory.items[i];
-					Environment.OnScp914UpgradeHeldItem(ply, syncItemInfo, out ItemType itemType);
+					Environment.OnScp914UpgradeItem(syncItemInfo.id, out ItemType itemType, out bool allow2);
+					if (!allow2)
+						return false;
 					if (itemType < ItemType.KeycardJanitor)
 					{
 						inventory.items.RemoveAt(i);

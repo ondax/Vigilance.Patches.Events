@@ -23,7 +23,7 @@ namespace Vigilance.Patches.Events
                             Environment.OnFemurEnter(player, true, out bool allow);
                             if (!allow)
                                 return false;
-                            player.Hub.playerStats.HurtPlayer(new PlayerStats.HitInfo(10000f, "WORLD", DamageTypes.Lure, 0), player.GameObject, true);
+                            player.Hub.playerStats.HurtPlayer(new PlayerStats.HitInfo(10000f, "WORLD", DamageTypes.Lure, player.PlayerId), player.GameObject, true);
                             __instance._lureSpj.SetState(true);
                         }
                     }

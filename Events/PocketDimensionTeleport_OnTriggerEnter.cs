@@ -5,6 +5,7 @@ using LightContainmentZoneDecontamination;
 using Mirror;
 using UnityEngine;
 using Harmony;
+using Vigilance.API;
 
 namespace Vigilance.Patches.Events
 {
@@ -26,7 +27,7 @@ namespace Vigilance.Patches.Events
 					}
 					else if (__instance.type == PocketDimensionTeleport.PDTeleportType.Exit)
 					{
-						Environment.OnPocketEscape(API.Server.PlayerList.GetPlayer(component.gameObject), Vector3.zero, true, out Vector3 escape, out bool allow);
+						Environment.OnPocketEscape(Server.PlayerList.GetPlayer(component.gameObject), Vector3.zero, true, out Vector3 escape, out bool allow);
 						__instance.tpPositions.Clear();
 						bool flag = false;
 						DecontaminationController.DecontaminationPhase[] decontaminationPhases = DecontaminationController.Singleton.DecontaminationPhases;

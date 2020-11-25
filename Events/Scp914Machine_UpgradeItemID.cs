@@ -4,23 +4,20 @@ using Scp914;
 
 namespace Vigilance.Patches.Events
 {
-    [HarmonyPatch(typeof(Scp914Machine), nameof(Scp914Machine.UpgradeItem))]
+    [HarmonyPatch(typeof(Scp914Machine), nameof(Scp914Machine.UpgradeItemID))]
     public static class Scp914Machine_UpgradeItem
     {
-        public static bool Prefix(Scp914Machine __instance, Pickup item, ref bool __result)
+        public static bool Prefix(Scp914Machine __instance, ItemType itemID, ref ItemType __result)
         {
             try
             {
-                Environment.OnScp914UpgradeItem(item, out ItemType itemType);
-                if (itemType < ItemType.KeycardJanitor)
+                Environment.OnScp914UpgradeItem(itemID, out ItemType output, out bool allow);
+                if (!allow)
                 {
-                    item.Delete();
-                    __result = false;
+                    __result = itemID;
                     return false;
                 }
-
-                item.SetIDFull(itemType);
-                __result = true;
+                __result = output;
                 return false;
             }
             catch (Exception e)

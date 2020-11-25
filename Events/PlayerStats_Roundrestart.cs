@@ -20,6 +20,11 @@ namespace Vigilance.Patches.Events
                     RoundSummary.RoundLock = false;
                     RoundStart.LobbyLock = false;
                 } 
+
+                foreach (Player player in Server.Players)
+                {
+                    Environment.OnPlayerLeave(player, out bool destroy);
+                }
                 Server.PlayerList.Reset();
             }
             catch (Exception e)

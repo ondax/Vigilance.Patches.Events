@@ -16,12 +16,21 @@ namespace Vigilance.Patches.Events
                 Player player = Server.PlayerList.GetPlayer(__instance._hub);
                 if (player == null)
                     return;
-                Environment.OnSpawn(player, player.Position, __instance.CurClass, true, out Vector3 pos, out RoleType role, out bool allow);
+                Environment.OnSpawn(player, player.Position, player.Role, true, out Vector3 pos, out RoleType role, out bool allow);
+                if (player.Distance(pos) > 1f)
+                    player.Teleport(pos);
+                if (player.Role != role)
+                    player.SetRole(role, true, false);
+
+                if (!allow)
+                {
+                    player.Hub.playerStats.HurtPlayer(new PlayerStats.HitInfo(20000f, player.Nick, DamageTypes.Wall, player.PlayerId), player.GameObject);
+                    return;
+                }
 
                 if (!ConfigManager.MakeSureToGiveItems)
                     return;
-
-                Timing.CallDelayed(2f, () =>
+                Timing.CallDelayed(0.1f, () =>
                 {
                     Inventory inventory = player.Hub.inventory;
                     if (inventory == null)
