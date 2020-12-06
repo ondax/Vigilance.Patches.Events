@@ -41,7 +41,7 @@ namespace Vigilance.Patches.Events
                     Player player = Server.PlayerList.GetPlayer(ccm._hub);
                     if (player != null)
                     {
-                        Environment.OnScp914UpgradePlayer(player, out bool allow2);
+                        Environment.OnScp914UpgradePlayer(player, true, out bool allow2);
                         if (!allow2)
                             return false;
                     }

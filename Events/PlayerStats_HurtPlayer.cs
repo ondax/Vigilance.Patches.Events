@@ -65,7 +65,7 @@ namespace Vigilance.Patches.Events
                 Player myPlayer = Server.PlayerList.GetPlayer(__instance.ccm._hub);
                 if (myTarget == null || myPlayer == null)
                     return true;
-                Environment.OnHurt(myPlayer, myTarget, info, true, out info, out bool allow);
+                Environment.OnHurt(myTarget, myPlayer, info, true, out info, out bool allow);
                 if (!allow)
                     return false;
                 float health = playerStats.Health;
@@ -214,6 +214,7 @@ namespace Vigilance.Patches.Events
                             info.IsPlayer ? (" playing as " + info.RHub.characterClassManager.CurRole.fullName + ".") : "."
                         }), flag2 ? ServerLogs.ServerLogType.Teamkill : ServerLogs.ServerLogType.KillLog, false);
                     }
+
                     if (info.GetDamageType().isScp || info.GetDamageType() == DamageTypes.Pocket)
                     {
                         RoundSummary.kills_by_scp++;
@@ -222,6 +223,7 @@ namespace Vigilance.Patches.Events
                     {
                         RoundSummary.kills_by_frag++;
                     }
+
                     if (spawnRagdoll && (!__instance._pocketCleanup || info.GetDamageType() != DamageTypes.Pocket))
                     {
                         if (ConfigManager.ShouldDropInventory)
@@ -252,11 +254,11 @@ namespace Vigilance.Patches.Events
                         else
                         {
                             GameObject gameObject = null;
-                            foreach (GameObject gameObject2 in PlayerManager.players)
+                            foreach (ReferenceHub hub in ReferenceHub.GetAllHubs().Values)
                             {
-                                if (gameObject2.GetComponent<QueryProcessor>().PlayerId == info.PlayerId)
+                                if (hub.queryProcessor.PlayerId == info.PlayerId)
                                 {
-                                    gameObject = gameObject2;
+                                    gameObject = hub.gameObject;
                                 }
                             }
                             if (gameObject != null)

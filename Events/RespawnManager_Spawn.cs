@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Harmony;
 using Respawning.NamingRules;
-using Vigilance.Extensions;
 using UnityEngine;
 using NorthwoodLib.Pools;
 using Respawning;
