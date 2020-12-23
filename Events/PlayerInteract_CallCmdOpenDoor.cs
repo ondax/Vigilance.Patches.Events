@@ -13,62 +13,74 @@ namespace Vigilance.Patches.Events
         {
             try
             {
-                if (!__instance._playerInteractRateLimit.CanExecute() || (__instance._hc.CufferId > 0 && !PlayerInteract.CanDisarmedInteract) || doorId == null || __instance._ccm.CurClass == RoleType.None || __instance._ccm.CurClass == RoleType.Spectator || !doorId.TryGetComponent(out Door component) || ((component.Buttons.Count == 0) ? (!__instance.ChckDis(doorId.transform.position)) : component.Buttons.All((Door.DoorButton item) => !__instance.ChckDis(item.button.transform.position))))
-                    return false;
-                __instance.OnInteract();
-                Player player = Server.PlayerList.GetPlayer(__instance._hub);
-                if (player == null)
-                    return true;
-                Environment.OnDoorInteract(true, component, player, out bool allow);
-                if (!allow || player.PlayerLock)
-                    return false;
+				if (!__instance._playerInteractRateLimit.CanExecute(true) || __instance._hc.CufferId > 0 || (__instance._hc.ForceCuff && !PlayerInteract.CanDisarmedInteract))
+					return false;
+				if (doorId == null)
+					return false;
+				if (__instance._ccm.CurClass == RoleType.None || __instance._ccm.CurClass == RoleType.Spectator)
+					return false;
+				Door door;
+				if (!doorId.TryGetComponent(out door))
+					return false;
+				if ((door.Buttons.Count == 0) ? (!__instance.ChckDis(doorId.transform.position)) : door.Buttons.All((Door.DoorButton item) => !__instance.ChckDis(item.button.transform.position)))
+					return false;
+				Player myPlayer = Server.PlayerList.GetPlayer(__instance._hub);
+				if (myPlayer == null)
+					return true;
+				Environment.OnDoorInteract(true, door, myPlayer, out bool allow);
+				if (!allow)
+					return false;
+				if (myPlayer.PlayerLock)
+					return false;
+				__instance.OnInteract();
+				if (__instance._sr.BypassMode)
+				{
+					door.ChangeState(true);
+					return false;
+				}
 
-                if (player.BypassMode)
-                {
-                    component.ChangeState(true);
-                    return false;
-                }
+				if (door.PermissionLevels.HasPermission(Door.AccessRequirements.Checkpoints) && __instance._ccm.CurRole.team == Team.SCP)
+				{
+					door.ChangeState(false);
+					return false;
+				}
 
-                if (component.PermissionLevels.HasPermission(Door.AccessRequirements.Checkpoints) && __instance._ccm.CurRole.team == Team.SCP)
-                {
-                    component.ChangeState();
-                    return false;
-                }
-
-                try
-                {
-                    if (component.PermissionLevels == (Door.AccessRequirements)0)
-                    {
-                        if (!component.locked)
-                        {
-                            component.ChangeState();
-                        }
-                    }
-                    else if (!component.RequireAllPermissions)
-                    {
-                        string[] permissions = __instance._inv.GetItemByID(__instance._inv.curItem).permissions;
-                        foreach (string key in permissions)
-                        {
-                            if (Door.backwardsCompatPermissions.TryGetValue(key, out Door.AccessRequirements value) && component.PermissionLevels.HasPermission(value))
-                            {
-                                if (!component.locked)
-                                    component.ChangeState();
-                                return false;
-                            }
-                        }
-                        __instance.RpcDenied(doorId);
-                    }
-                    else
-                    {
-                        __instance.RpcDenied(doorId);
-                    }
-                }
-                catch (Exception)
-                {
-                    __instance.RpcDenied(doorId);
-                }
-                return false;
-            }
+				try
+				{
+					if (door.PermissionLevels == (Door.AccessRequirements)0)
+					{
+						if (!door.locked)
+						{
+							door.ChangeState(false);
+						}
+					}
+					else if (!door.RequireAllPermissions)
+					{
+						foreach (string key in __instance._inv.GetItemByID(__instance._inv.curItem).permissions)
+						{
+							Door.AccessRequirements flag;
+							if (Door.backwardsCompatPermissions.TryGetValue(key, out flag) && door.PermissionLevels.HasPermission(flag))
+							{
+								if (!door.locked)
+								{
+									door.ChangeState(false);
+								}
+								return false;
+							}
+						}
+						__instance.RpcDenied(doorId);
+					}
+					else
+					{
+						__instance.RpcDenied(doorId);
+					}
+				}
+				catch
+				{
+					__instance.RpcDenied(doorId);
+				}
+				return false;
+			}
             catch (Exception e)
             {
                 Log.Add(nameof(PlayerInteract.CallCmdOpenDoor), e);
