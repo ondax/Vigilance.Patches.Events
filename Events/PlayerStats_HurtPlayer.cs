@@ -14,22 +14,20 @@ namespace Vigilance.Patches.Events
     [HarmonyPatch(typeof(PlayerStats), nameof(PlayerStats.HurtPlayer))]
     public static class PlayerStats_HurtPlayer
     {
-        public static PlayerStats.HitInfo LastInfo { get; set; }
-        public static GameObject LastTarget { get; set; }
-
         public static bool Prefix(PlayerStats __instance, PlayerStats.HitInfo info, GameObject go, bool noTeamDamage = false, bool IsValidDamage = false)
         {
             try
             {
-                LastInfo = info;
-                LastTarget = go;
 				bool flag = false;
 				bool flag2 = false;
 				bool flag3 = go == null;
-				ReferenceHub referenceHub = flag3 ? null : ReferenceHub.GetHub(go);
+				Player target = Server.PlayerList.GetPlayer(go);
+				Player attacker = Server.PlayerList.GetPlayer(__instance.gameObject);
+				ReferenceHub referenceHub = target == null ? null : target.Hub;
+
 				if (info.Amount < 0f)
 				{
-					if (flag3)
+					if (target == null)
 					{
 						info.Amount = Mathf.Abs(999999f);
 					}
@@ -60,10 +58,8 @@ namespace Vigilance.Patches.Events
 				bool flag4 = !noTeamDamage && info.IsPlayer && referenceHub != info.RHub && referenceHub.characterClassManager.Fraction == info.RHub.characterClassManager.Fraction;
 				if (flag4)
 					info.Amount *= PlayerStats.FriendlyFireFactor;
-				Player myTarget = Server.PlayerList.GetPlayer(referenceHub);
-				Player myPlayer = Server.PlayerList.GetPlayer(__instance.ccm._hub);
-				if (myTarget == null || myPlayer == null)
-					return true;
+				Player myTarget = target;
+				Player myPlayer = attacker;
 				Environment.OnHurt(myTarget, myPlayer, info, true, out info, out bool allow);
 				if (!allow)
 					return false;

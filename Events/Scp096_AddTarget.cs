@@ -19,6 +19,12 @@ namespace Vigilance.Patches.Events
                 Player myPlayer = Server.PlayerList.GetPlayer(__instance.Hub);
                 if (player == null || myPlayer == null)
                     return true;
+                if (player.Role == RoleType.Tutorial && !ConfigManager.CanTutorialTriggerScp096)
+                    return false;
+                if (!player.CanTriggerScp096)
+                    return false;
+                if (API.Ghostmode.CannotTriggerScp096.Contains(player))
+                    return false;
                 if (!__instance.CanReceiveTargets || __instance._targets.Contains(player.Hub))
                     return false;
                 Environment.OnScp096AddTarget(myPlayer, player, true, out bool allow);
