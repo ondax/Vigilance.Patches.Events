@@ -39,7 +39,7 @@ namespace Vigilance.Patches.Events
                         inventory = player.GetComponent<Inventory>();
                     }
 
-                    foreach (ItemType item in player.CurrentClass.StartingItems)
+                    foreach (ItemType item in player.Hub.characterClassManager.CurRole.startItems)
                     {
                         if (inventory == null)
                         {
