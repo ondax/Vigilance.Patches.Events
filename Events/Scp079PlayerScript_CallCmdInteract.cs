@@ -7,6 +7,7 @@ using UnityEngine;
 using NorthwoodLib.Pools;
 using Interactables.Interobjects.DoorUtils;
 using System.Linq;
+using Vigilance.Extensions;
 
 namespace Vigilance.Patches.Events
 {
@@ -19,17 +20,19 @@ namespace Vigilance.Patches.Events
             {
 				if (!__instance._interactRateLimit.CanExecute() || !__instance.iAm079)
 					return false;
+				GameCore.Console.AddDebugLog("SCP079", "Command received from a client: " + command, MessageImportance.LessImportant);
 				if (!command.Contains(":"))
 					return false;
 				string[] array = command.Split(':');
 				__instance.RefreshCurrentRoom();
-				if (!__instance.CheckInteractableLegitness(__instance.currentRoom, __instance.currentZone, target, true))
+				if (!__instance.CheckInteractableLegitness(__instance.currentRoom, __instance.currentZone, target, allowNull: true))
 					return false;
 				DoorVariant component = null;
 				bool flag = target != null && target.TryGetComponent<DoorVariant>(out component);
 				List<string> list = ConfigFile.ServerConfig.GetStringList("scp079_door_blacklist") ?? new List<string>();
+				API.Door door = component?.GetDoor();
 				Player player = Server.PlayerList.GetPlayer(__instance.gameObject);
-				if (player == null)
+				if (door == null || player == null)
 					return true;
 				switch (array[0])
 				{
@@ -47,11 +50,10 @@ namespace Vigilance.Patches.Events
 								GameCore.Console.AddDebugLog("SCP079", "Door access denied by the server.", MessageImportance.LeastImportant);
 								break;
 							}
-
 							string text3 = component.RequiredPermissions.RequiredPermissions.ToString();
 							float manaFromLabel = __instance.GetManaFromLabel("Door Interaction " + (text3.Contains(",") ? text3.Split(',')[0] : text3), __instance.abilities);
-							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Door, target, manaFromLabel, true, out manaFromLabel, out bool allow5);
-							if (!allow5)
+							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Door, target, manaFromLabel, true, out manaFromLabel, out bool allow);
+							if (!allow)
 								return false;
 							if (manaFromLabel > __instance.curMana)
 							{
@@ -59,13 +61,12 @@ namespace Vigilance.Patches.Events
 								__instance.RpcNotEnoughMana(manaFromLabel, __instance.curMana);
 								break;
 							}
-
 							bool targetState = component.TargetState;
 							component.ServerInteract(ReferenceHub.GetHub(__instance.gameObject), 0);
 							if (targetState != component.TargetState)
 							{
 								__instance.Mana -= manaFromLabel;
-								__instance.AddInteractionToHistory(target, array[0], true);
+								__instance.AddInteractionToHistory(target, array[0], addMana: true);
 								GameCore.Console.AddDebugLog("SCP079", "Door state changed.", MessageImportance.LeastImportant);
 							}
 							else
@@ -78,9 +79,7 @@ namespace Vigilance.Patches.Events
 						if (AlphaWarheadController.Host.inProgress)
 							break;
 						if (target == null)
-						{
 							GameCore.Console.AddDebugLog("SCP079", "The door lock command requires a target.", MessageImportance.LessImportant);
-						}
 						else
 						{
 							if (component == null)
@@ -102,8 +101,8 @@ namespace Vigilance.Patches.Events
 							}
 
 							float manaFromLabel = __instance.GetManaFromLabel("Door Lock Minimum", __instance.abilities);
-							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Lockdown, target, manaFromLabel, true, out manaFromLabel, out bool allow3);
-							if (!allow3)
+							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Door, target, manaFromLabel, true, out manaFromLabel, out bool allow2);
+							if (!allow2)
 								return false;
 							if (manaFromLabel > __instance.curMana)
 							{
@@ -112,10 +111,7 @@ namespace Vigilance.Patches.Events
 							}
 
 							if (!__instance.lockedDoors.Contains(component.netId))
-							{
 								__instance.lockedDoors.Add(component.netId);
-							}
-
 							component.ServerChangeLock(DoorLockReason.Regular079, newState: true);
 							__instance.AddInteractionToHistory(component.gameObject, array[0], addMana: true);
 							__instance.Mana -= __instance.GetManaFromLabel("Door Lock Start", __instance.abilities);
@@ -126,8 +122,8 @@ namespace Vigilance.Patches.Events
 							string text2 = __instance.currentZone + "/" + __instance.currentRoom + "/Scp079Speaker";
 							GameObject gameObject3 = GameObject.Find(text2);
 							float manaFromLabel = __instance.GetManaFromLabel("Speaker Start", __instance.abilities);
-							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Speaker, target, manaFromLabel, true, out manaFromLabel, out bool allow4);
-							if (!allow4)
+							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Speaker, target, manaFromLabel, true, out manaFromLabel, out bool allow3);
+							if (!allow3)
 								return false;
 							if (manaFromLabel * 1.5f > __instance.curMana)
 							{
@@ -135,7 +131,6 @@ namespace Vigilance.Patches.Events
 							}
 							else if (gameObject3 != null)
 							{
-
 								__instance.Mana -= manaFromLabel;
 								__instance.Speaker = text2;
 								__instance.AddInteractionToHistory(gameObject3, array[0], addMana: true);
@@ -143,16 +138,18 @@ namespace Vigilance.Patches.Events
 							break;
 						}
 					case "STOPSPEAKER":
-						Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Speaker, target, 0f, true, out float mana, out bool allow);
-						if (!allow)
+						Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.Speaker, target, 0f, true, out float cost, out bool allow4);
+						if (!allow4)
 							return false;
+						if (cost > 0f)
+							__instance.Mana -= cost;
 						__instance.Speaker = string.Empty;
 						break;
 					case "ELEVATORTELEPORT":
 						{
 							float manaFromLabel = __instance.GetManaFromLabel("Elevator Teleport", __instance.abilities);
-							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.ElevatorTeleport, target, manaFromLabel, true, out manaFromLabel, out bool allow2);
-							if (!allow2)
+							Environment.OnSCP079Interact(player, Scp079Interactable.InteractableType.ElevatorTeleport, target, manaFromLabel, true, out manaFromLabel, out bool allow5);
+							if (!allow5)
 								return false;
 							if (manaFromLabel > __instance.curMana)
 							{
@@ -169,14 +166,16 @@ namespace Vigilance.Patches.Events
 							}
 							if (camera != null)
 							{
-								__instance.RpcSwitchCamera(camera.cameraId, false);
+								__instance.RpcSwitchCamera(camera.cameraId, lookatRotation: false);
 								__instance.Mana -= manaFromLabel;
-								__instance.AddInteractionToHistory(target, array[0], true);
+								__instance.AddInteractionToHistory(target, array[0], addMana: true);
 							}
 							else
 							{
 								if (!ConsoleDebugMode.CheckImportance("SCP079", MessageImportance.LeastImportant, out var _))
+								{
 									break;
+								}
 								Scp079Interactable scp079Interactable2 = null;
 								Dictionary<Scp079Interactable.InteractableType, byte> dictionary = new Dictionary<Scp079Interactable.InteractableType, byte>();
 								foreach (Scp079Interactable nearbyInteractable2 in __instance.nearbyInteractables)
@@ -407,7 +406,7 @@ namespace Vigilance.Patches.Events
 							break;
 						}
 				}
-				return true;
+				return false;
             }
             catch (Exception e)
             {

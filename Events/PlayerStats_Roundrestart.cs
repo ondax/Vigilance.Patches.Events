@@ -16,6 +16,7 @@ namespace Vigilance.Patches.Events
                 RagdollManager_SpawnRagdoll.Owners.Clear();
                 RagdollManager_SpawnRagdoll.Ragdolls.Clear();
                 Inventory_CallCmdDropItem.Pickups.Clear();
+
                 if (ConfigManager.DisableLocksOnRestart)
                 {
                     RoundSummary.RoundLock = false;

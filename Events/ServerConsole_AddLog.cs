@@ -13,8 +13,6 @@ namespace Vigilance.Patches.Events
                 Environment.OnConsoleAddLog(q);
                 if (q == "Waiting for players...")
                     Environment.OnWaitingForPlayers();
-                if (q == "New round has been started.")
-                    Environment.OnRoundStart();
             }
             catch (Exception e)
             {
