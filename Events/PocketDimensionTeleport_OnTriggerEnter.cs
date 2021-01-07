@@ -7,7 +7,6 @@ using UnityEngine;
 using Harmony;
 using Vigilance.API;
 using MapGeneration;
-using Vigilance.Extensions;
 
 namespace Vigilance.Patches.Events
 {
@@ -73,7 +72,6 @@ namespace Vigilance.Patches.Events
 						component3.OverridePosition(pos, 0f, false);
 						__instance.RemoveCorrosionEffect(other.gameObject);
 						PlayerManager.localPlayer.GetComponent<PlayerStats>().TargetAchieve(component.connectionToClient, "larryisyourfriend");
-						Environment.OnPocketEscape(component3?._hub?.GetPlayer(), pos, true, out pos, out allow);
 						return false;
 					}
 					if (PocketDimensionTeleport.RefreshExit)

@@ -37,8 +37,6 @@ namespace Vigilance.Patches.Events
 							DoorVariant component = gameObject.GetComponent<DoorVariant>();
 							if (component != null)
 							{
-								DoorType type = component.GetDoorType();
-								if (!DoorExtensions.LightContainmentDoors.Contains(type) && type != DoorType.UnknownDoor) continue;
 								component.NetworkTargetState = false;
 								component.ServerChangeLock(DoorLockReason.DecontLockdown, true);
 							}

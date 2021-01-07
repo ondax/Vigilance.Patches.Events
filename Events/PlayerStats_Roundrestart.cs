@@ -120,7 +120,7 @@ namespace Vigilance.Patches.Events
         public static void SendRestartRpc(PlayerStats ps)
         {
             NetworkWriter writer = NetworkWriterPool.GetWriter();
-            writer.WriteSingle(0.1f);
+            writer.WriteSingle(1f);
             writer.WriteBoolean(true);
             ps.SendRPCInternal(typeof(PlayerStats), "RpcRoundrestart", writer, 0);
             NetworkWriterPool.Recycle(writer);
