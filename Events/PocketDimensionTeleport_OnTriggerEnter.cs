@@ -7,25 +7,29 @@ using UnityEngine;
 using Harmony;
 using Vigilance.API;
 using MapGeneration;
+using Vigilance.Extensions;
 
 namespace Vigilance.Patches.Events
 {
-    [HarmonyPatch(typeof(PocketDimensionTeleport), nameof(PocketDimensionTeleport.OnTriggerEnter))]
-    public static class PocketDimensionTeleport_OnTriggerEnter
-    {
-        public static bool Prefix(PocketDimensionTeleport __instance, Collider other)
-        {
-            try
-            {
+	[HarmonyPatch(typeof(PocketDimensionTeleport), nameof(PocketDimensionTeleport.OnTriggerEnter))]
+	public static class PocketDimensionTeleport_OnTriggerEnter
+	{
+		public static bool Prefix(PocketDimensionTeleport __instance, Collider other)
+		{
+			try
+			{
+				if (!NetworkServer.active)
+					return false;
 				NetworkIdentity component = other.GetComponent<NetworkIdentity>();
 				if (component != null)
 				{
 					if (__instance.type == PocketDimensionTeleport.PDTeleportType.Killer || BlastDoor.OneDoor.isClosed)
 					{
-						component.GetComponent<PlayerStats>().HurtPlayer(new PlayerStats.HitInfo(999990f, "WORLD", DamageTypes.Pocket, 0), other.gameObject, true, true);
+						component.GetComponent<PlayerStats>().HurtPlayer(new PlayerStats.HitInfo(999990f, "WORLD", DamageTypes.Pocket, 0), other.gameObject, true);
 					}
 					else if (__instance.type == PocketDimensionTeleport.PDTeleportType.Exit)
 					{
+						Environment.OnPocketEscape(Server.PlayerList.GetPlayer(component.gameObject), Vector3.zero, true, out Vector3 escape, out bool allow);
 						__instance.tpPositions.Clear();
 						bool flag = false;
 						DecontaminationController.DecontaminationPhase[] decontaminationPhases = DecontaminationController.Singleton.DecontaminationPhases;
@@ -65,31 +69,25 @@ namespace Vigilance.Patches.Events
 						Vector3 pos = __instance.tpPositions[UnityEngine.Random.Range(0, __instance.tpPositions.Count)];
 						pos.y += 2f;
 						PlayerMovementSync component3 = other.GetComponent<PlayerMovementSync>();
-						Player player = Server.PlayerList.GetPlayer(component3._hub);
-						if (player == null)
-							return true;
-						Environment.OnPocketEscape(player, pos, true, out pos, out bool allow);
-						if (!allow)
-							return false;
-						component3.AddSafeTime(2f, false);
+						component3.AddSafeTime(2f);
 						component3.OverridePosition(pos, 0f, false);
 						__instance.RemoveCorrosionEffect(other.gameObject);
 						PlayerManager.localPlayer.GetComponent<PlayerStats>().TargetAchieve(component.connectionToClient, "larryisyourfriend");
+						Environment.OnPocketEscape(component3?._hub?.GetPlayer(), pos, true, out pos, out allow);
+						return false;
 					}
-
 					if (PocketDimensionTeleport.RefreshExit)
 					{
 						ImageGenerator.pocketDimensionGenerator.GenerateRandom();
 					}
 				}
-
 				return false;
-            }
-            catch (Exception e)
-            {
-                Log.Add(e);
-                return true;
-            }
-        }
-    }
+			}
+			catch (Exception e)
+			{
+				Log.Add(nameof(PocketDimensionTeleport.OnTriggerEnter), e);
+				return true;
+			}
+		}
+	}
 }
