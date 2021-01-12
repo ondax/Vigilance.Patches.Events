@@ -12,12 +12,18 @@ namespace Vigilance.Patches.Events
     [HarmonyPatch(typeof(PlayerStats), nameof(PlayerStats.Roundrestart))]
     public static class PlayerStats_Roundrestart
     {
-        public static bool Prefix(PlayerStats __instance) => Restart.DoRestart(__instance, ConfigManager.FastRestart);
+        public static bool Prefix(PlayerStats __instance) => Restart.Commit(__instance, ConfigManager.FastRestart ? Restart.RestartType.Fast : Restart.RestartType.Normal);
     }
 
     public static class Restart
     {
         public static bool RestartMessageShown = false;
+
+        public enum RestartType
+        {
+            Normal,
+            Fast
+        }
 
         public static void ServerRestart()
         {
@@ -26,31 +32,31 @@ namespace Vigilance.Patches.Events
             Timing.CallDelayed(1.5f, () => Application.Quit());
         }
 
-        public static bool DoRestart(PlayerStats ps, bool fast)
+        public static bool Commit(PlayerStats ps, RestartType type)
         {
             try
             {
                 if (!RestartMessageShown)
                 {
-                    Log.Add("RESTART", $"The round is restarting! Using a {(fast ? "fast" : "normal")} restart.", ConsoleColor.Magenta);
+                    Log.Add("RESTART", $"The round is restarting! Using a {type} restart.", ConsoleColor.Magenta);
                     RestartMessageShown = true;
                 }
 
                 Round.CurrentState = Enums.RoundState.Restarting;
                 Environment.OnRoundRestart();
-                CustomLiteNetLib4MirrorTransport.DelayConnections = true;
-                IdleMode.PauseIdleMode = true;
-                foreach (MirrorIgnorancePlayer ig in Map.FindObjects<MirrorIgnorancePlayer>())
-                    ig?.OnDisable();
-                if (fast)
-                    return DoFastRestart(ps);
+                PauseAndDelay();
+
+                if (type == RestartType.Fast)
+                {
+                    DoFastRestart(ps);
+                }
                 else
                 {
-                    SendRestartRpc(ps);
-                    ChangeScene();
-                    Clear();
-                    return false;
+                    DoNormalRestart(ps);
                 }
+
+                Clear();
+                return false;
             }
             catch (Exception e)
             {
@@ -60,11 +66,24 @@ namespace Vigilance.Patches.Events
             }
         }
 
+        public static void PauseAndDelay()
+        {
+            CustomLiteNetLib4MirrorTransport.DelayConnections = true;
+            CustomLiteNetLib4MirrorTransport.UserIdFastReload.Clear();
+            foreach (MirrorIgnorancePlayer pl in Map.FindObjects<MirrorIgnorancePlayer>())
+                pl?.OnDisable();
+        }
+
+        public static void DoNormalRestart(PlayerStats ps)
+        {
+            SendRestartRpc(ps.ccm._hub);
+            ChangeScene(ps);
+        }
+
         public static bool DoFastRestart(PlayerStats ps)
         {
             try
             {
-                CustomLiteNetLib4MirrorTransport.UserIdFastReload.Clear();
                 foreach (ReferenceHub referenceHub in ReferenceHub.GetAllHubs().Values)
                 {
                     if (!referenceHub.isDedicatedServer)
@@ -82,7 +101,7 @@ namespace Vigilance.Patches.Events
                 }
 
                 ps?.RpcFastRestart();
-                PlayerStats.StaticChangeLevel(false);
+                ChangeScene(ps);
                 return false;
             }
             catch (Exception e)
@@ -93,13 +112,9 @@ namespace Vigilance.Patches.Events
             }
         }
 
-        public static void ChangeScene()
+        public static void ChangeScene(PlayerStats ps)
         {
-            Log.Add("RESTART", $"Changing scene to {NetworkManager.singleton.onlineScene}", ConsoleColor.Magenta);
-            Environment.Cache.CollectGarbage();
-            PlayerStats._rrTime = DateTime.Now;
-            PlayerStats.UptimeRounds += 1U;
-            NetworkManager.singleton.ServerChangeScene(NetworkManager.singleton.onlineScene);
+            ps.Invoke("ChangeLevel", 2.5f);
         }
 
         public static void Clear()
@@ -117,12 +132,12 @@ namespace Vigilance.Patches.Events
             Server.PlayerList.Reset();
         }
 
-        public static void SendRestartRpc(PlayerStats ps)
+        public static void SendRestartRpc(ReferenceHub hub)
         {
             NetworkWriter writer = NetworkWriterPool.GetWriter();
-            writer.WriteSingle(1f);
+            writer.WriteSingle(PlayerPrefsSl.Get("LastRoundrestartTime", 5000) / 1000f);
             writer.WriteBoolean(true);
-            ps.SendRPCInternal(typeof(PlayerStats), "RpcRoundrestart", writer, 0);
+            hub.playerStats.SendRPCInternal(typeof(PlayerStats), "RpcRoundrestart", writer, 0);
             NetworkWriterPool.Recycle(writer);
         }
     }
