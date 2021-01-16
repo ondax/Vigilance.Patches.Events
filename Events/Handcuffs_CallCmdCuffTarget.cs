@@ -25,7 +25,7 @@ namespace Vigilance.Patches.Events
                     return false;
                 if (targetPlayer.Hub.handcuffs.CufferId < 0)
                 {
-                    if (!ConfigManager.AllowCuffWhileHolding && targetPlayer.Hub.inventory.curItem == ItemType.None)
+                    if (!ConfigManager.AllowCuffWhileHolding && targetPlayer.Hub.inventory.curItem != ItemType.None)
                         return false;
                     Team team = __instance.MyReferenceHub.characterClassManager.CurRole.team;
                     Team team2 = targetPlayer.Hub.characterClassManager.CurRole.team;
